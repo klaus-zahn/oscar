@@ -86,7 +86,7 @@ struct GPIO_PIN
 	bool                    bState;
 };
 
-#ifdef TARGET_TYPE_LEANXCAM
+#if defined(TARGET_TYPE_LEANXCAM) || defined(TARGET_TYPE_RASPI_CAM)
 	/* Pin mapping */
 	#define PIN_IN1_N           GPIO_IN1
 	#define PIN_IN2_N           GPIO_IN2
@@ -127,7 +127,7 @@ struct OSC_GPIO
 {
 	/*! @brief File descriptors of all the pins used */
 	struct GPIO_PIN     pins[NR_OF_DSP_GPIOS];
-#ifdef TARGET_TYPE_LEANXCAM
+#if defined(TARGET_TYPE_LEANXCAM) || defined(TARGET_TYPE_RASPI_CAM)
 	/*! @brief Whether external or internal triggering is currently configured. */
 	enum EnTriggerConfig  enTriggerConfig;
 #endif /* TARGET_TYPE_LEANXCAM */

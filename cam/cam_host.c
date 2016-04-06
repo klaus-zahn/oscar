@@ -306,7 +306,7 @@ OSC_ERR OscCamCreate()
 	cam.lastValidID = OSC_CAM_INVALID_BUFFER_ID;
 	
 	err = SUCCESS;
-#ifdef TARGET_TYPE_LEANXCAM
+#if defined(TARGET_TYPE_LEANXCAM) || defined(TARGET_TYPE_RASPI_CAM)
 	/* Disable LED_OUT on leanXcam so the GPIOs can function correctly.
 	 * This output is or'ed with GPIO_OUT2_N. */
 	err |=  OscCamSetRegisterValue(CAM_REG_LED_OUT_CONTROL, 0x01);

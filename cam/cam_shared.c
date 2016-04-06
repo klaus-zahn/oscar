@@ -28,6 +28,13 @@
 
 #include <unistd.h>
 
+#ifdef TARGET_TYPE_RASPI_CAM
+	#include <sys/ioctl.h>
+	#include <errno.h>
+	#include <linux/types.h>
+	#include <linux/videodev2.h>
+#endif
+
 extern struct OSC_CAM cam;
 
 /*! @brief Determine whether an integer number is even. */
@@ -35,6 +42,54 @@ extern struct OSC_CAM cam;
 
 OSC_ERR OscCamSetShutterWidth(const uint32 usecs)
 {
+#ifdef TARGET_TYPE_RASPI_CAM
+	struct v4l2_control control;
+
+	if(usecs == 0) //set auto exposure
+	{
+		OscLog(DEBUG,"set auto exposure\n");
+		control.id = V4L2_CID_EXPOSURE_AUTO;
+		control.value = V4L2_EXPOSURE_AUTO;
+	}
+	else
+	{
+		OscLog(DEBUG,"set manual exposure\n");
+		control.id = V4L2_CID_EXPOSURE_AUTO;
+		control.value = V4L2_EXPOSURE_MANUAL;
+	}
+	int ret = ioctl(cam.vidDev, VIDIOC_S_CTRL, &control);
+
+	if(unlikely(ret < 0))
+	{
+		OscLog(ERROR,
+				"%s: Unable to set exposure control to %s: \
+				IOCTL failed with %d.\n",
+				__func__, usecs ? "V4L2_EXPOSURE_AUTO" : "V4L2_EXPOSURE_MANUAL", errno);
+
+		return -EDEVICE;
+	}
+
+	if(usecs)
+	{
+		OscLog(DEBUG,"set manual exposure %d\n", usecs/100);
+
+		control.id = V4L2_CID_EXPOSURE_ABSOLUTE;
+		control.value = usecs/100;
+
+		int ret = ioctl(cam.vidDev, VIDIOC_S_CTRL, &control);
+
+		if(unlikely(ret < 0))
+		{
+			OscLog(ERROR,
+					"%s: Unable to set manual exposure control to %d: \
+					IOCTL failed with %d.\n",
+					__func__, usecs, errno);
+
+			return -EDEVICE;
+		}
+	}
+
+#else
 	uint32          nPixelClks;
 	uint16          shutterWidth;
 	OSC_ERR         err;
@@ -53,6 +108,7 @@ OSC_ERR OscCamSetShutterWidth(const uint32 usecs)
 		cam.curExpTime = usecs;
 	}
 	return err;
+#endif
 }
 
 OSC_ERR OscCamGetShutterWidth(uint32 * pResult)
@@ -324,7 +380,7 @@ OSC_ERR OscCamPresetRegs()
 	 * This output is or'ed with GPIO_OUT2_N. */
 	err |=  OscCamSetRegisterValue(CAM_REG_LED_OUT_CONTROL, 0x03);
 	#endif /*TARGET_TYPE_INDXCAM*/
-	#ifdef TARGET_TYPE_LEANXCAM
+	#if defined(TARGET_TYPE_LEANXCAM) || defined(TARGET_TYPE_RASPI_CAM)
 	/* color, linear */
 	err |= OscCamSetRegisterValue( CAM_REG_PIXEL_OP_MODE, 0x0015);
 	#endif /*TARGET_TYPE_LEANXCAM*/
@@ -380,7 +436,7 @@ OSC_ERR OscCamPresetRegs()
 	return SUCCESS;
 }
 
-#ifdef TARGET_TYPE_LEANXCAM
+#if defined(TARGET_TYPE_LEANXCAM) || defined(TARGET_TYPE_RASPI_CAM)
 OSC_ERR OscCamGetBayerOrder(enum EnBayerOrder *pBayerOrderFirstRow,
 							const uint16 xPos,
 							const uint16 yPos)

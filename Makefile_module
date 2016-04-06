@@ -32,15 +32,26 @@ CC_host := $(CC_host_) -O2
 CC_host_dbg := $(CC_host_) -g
 
 # Cross-Compiler executables and flags.
-CC_target_ := bfin-uclinux-gcc $(CFLAGS) -DOSC_TARGET
-CC_target := $(CC_target_) -O2
-CC_target_dbg := $(CC_target_) -ggdb3
+ifeq '$(CONFIG_BOARD)' 'raspi-cam'
+  CC_target_ := arm-linux-gnueabihf-gcc $(CFLAGS) -DOSC_HOST
+  CC_target := $(CC_target_) -O2
+  CC_target_dbg := $(CC_target_) -g
+else
+  CC_target_ := bfin-uclinux-gcc $(CFLAGS) -DOSC_TARGET
+  CC_target := $(CC_target_) -O2
+  CC_target_dbg := $(CC_target_) -ggdb3
+endif
+
 CC_target_sim := $(CC_target_) -DOSC_SIM -O2
 CC_target_sim_dbg := $(CC_target_) -DOSC_SIM -ggdb3
 
 # Assembler for the host and the target.
 AS_host := as
-AS_target := bfin-uclinux-as
+ifeq '$(CONFIG_BOARD)' 'raspi-cam'
+  AS_target := arm-linux-gnueabihf-as
+else
+  AS_target := bfin-uclinux-as
+endif
 
 # Listings of source files for the different modes.
 SOURCES := $(filter-out %_host.c %_target.c, $(wildcard *.c))
@@ -65,13 +76,16 @@ all: $(MODES)
 #Defining and expanding the build targets.
 define build_rules
 $(1): $(patsubst %.c, build/%_$(1).o, $(patsubst %.asm, build/%_$(1).o, $(call firstvar, SOURCES_$(1))))
+build/%_$(1).o: %.asm $(filter-out %.d, $(MAKEFILE_LIST))
+ifeq '$(CONFIG_BOARD)' 'raspi-cam'
+else
+	@ mkdir -p $$(dir $$@)
+	$$(call firstvar, AS_$(1)) $$< -o $$@
+endif
 build/%_$(1).o: %.c $(filter-out %.d, $(MAKEFILE_LIST))
 	@ mkdir -p $$(dir $$@)
 	$$(call firstvar, CC_$(1)) -MD $$< -o $$@
 	@ grep -oE '[^ \\]+' < $$(@:.o=.d) | sed -r '/:$$$$/d; s|^.*$$$$|$$@: \0\n\0:|' > $$(@:.o=.d~) && mv -f $$(@:.o=.d){~,}
-build/%_$(1).o: %.asm $(filter-out %.d, $(MAKEFILE_LIST))
-	@ mkdir -p $$(dir $$@)
-	$$(call firstvar, AS_$(1)) $$< -o $$@
 endef
 $(foreach i, $(MODES), $(eval $(call build_rules,$(i))))
 

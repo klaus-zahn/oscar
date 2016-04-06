@@ -68,7 +68,7 @@
 /*! @brief The config file used to set up the filename reader. */
 #define FILENAME_READER_CONFIG_FILE "cam.frdconf"
 
-#if defined(OSC_HOST) || defined(OSC_SIM)
+#if defined(OSC_HOST) || defined(OSC_SIM) || defined(TARGET_TYPE_LEANXCAM)
 /*! @brief Host only: The different states a frame buffer can be in */
 enum EnOscFrameBufferStatus {
 	STATUS_UNITIALIZED,
@@ -118,7 +118,7 @@ struct OSC_CAM
 #endif /*OSC_TARGET*/
 	
 	/* Members only needed for the host implementation */
-#if defined(OSC_HOST) || defined(OSC_SIM)
+#if defined(OSC_HOST) || defined(OSC_SIM) || defined (TARGET_TYPE_RASPI_CAM)
 	/*! @brief Host only: All registers of the mt9v032 CMOS sensor */
 	struct reg_info regs[NUM_CAM_REGS];
 	/*! @brief Host only: The current status of the frame buffers */

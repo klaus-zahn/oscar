@@ -20,8 +20,14 @@
  * @brief Logging module implementation for target
  */
 
-#include <syslog.h>
 #include "log.h"
+
+#ifdef TARGET_TYPE_RASPI_CAM
+	#include "log_host.c"
+#else
+
+#include <syslog.h>
+
 
 OSC_ERR OscLogCreate();
 OSC_ERR OscLogDestroy();
@@ -151,4 +157,4 @@ OSC_ERR OscFatalErr(const char * strFormat, ...)
 	exit(1);
 }
 
-
+#endif /* #ifdef TARGET_TYPE_RASPI_CAM */

@@ -20,6 +20,12 @@
  * @brief Support module implementation for host
  */
 
+#include "sup.h"
+
+#ifdef TARGET_TYPE_RASPI_CAM
+	#include "sup_host.c"
+#else
+
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <fcntl.h>
@@ -29,7 +35,7 @@
 #include <errno.h>
 #include <bfin_sram.h>
 
-#include "sup.h"
+
 
 OSC_ERR OscSupCreate();
 
@@ -214,3 +220,5 @@ int OscSupSramFree(void *pAddr)
 		return -EINVALID_PARAMETER;
 	}
 }
+
+#endif /* #ifdef TARGET_TYPE_RASPI_CAM */

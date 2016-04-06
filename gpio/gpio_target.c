@@ -19,6 +19,11 @@
 /*! @file
  * @brief GPIO module implementation for host
  */
+#include "gpio.h"
+
+#ifdef TARGET_TYPE_RASPI_CAM
+	#include "gpio_host.c"
+#else
 
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -28,7 +33,6 @@
 #include <linux/ioctl.h>
 #include <errno.h>
 
-#include "gpio.h"
 
 /*! @brief The module singelton instance. */
 extern struct OSC_GPIO gpio;
@@ -447,3 +451,6 @@ OSC_ERR OscGpioConfigImageTrigger(enum EnTriggerConfig enConfig)
 }
 
 #endif /* TARGET_TYPE_LEANXCAM */
+
+#endif /* #ifdef TARGET_TYPE_RASPI_CAM */
+

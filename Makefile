@@ -29,7 +29,11 @@ endif
 
 # Executable to create the static library
 AR_host := ar -rcs
-AR_target := bfin-uclinux-ar -rcs
+ifeq '$(CONFIG_BOARD)' 'raspi-cam'
+  AR_target := arm-linux-gnueabihf-ar -rcs
+else
+  AR_target := bfin-uclinux-ar -rcs
+endif
 
 # Modes to compile this module in.
 MODES := host target target_sim

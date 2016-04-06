@@ -19,8 +19,12 @@
 /*! @file
  * @brief Simulation module implementation for host
  */
-
 #include "sim.h"
+
+#ifdef TARGET_TYPE_RASPI_CAM
+	#include "sim_host.c"
+#else
+
 
 OSC_ERR OscSimCreate();
 
@@ -66,3 +70,5 @@ OSC_ERR OscSimRegisterCycleCallback( void (*pCallback)(void))
 {
 	return SUCCESS;
 }
+
+#endif /* #ifdef TARGET_TYPE_RASPI_CAM */

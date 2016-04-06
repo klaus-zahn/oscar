@@ -43,7 +43,7 @@ struct OscModule OscModule_gpio = {
 /*! @brief The length of the dependency array of this module. */
 #define DEP_LEN (sizeof(gpio_deps)/sizeof(struct OSC_DEPENDENCY))
 
-#ifdef TARGET_TYPE_LEANXCAM
+#if defined(TARGET_TYPE_LEANXCAM) || defined(TARGET_TYPE_RASPI_CAM)
 /*! @brief Array with the default config of all the pins used on the
  * leanXcam.
  * All I/Os are configured to be high active at the actual plug. */
@@ -104,7 +104,7 @@ OSC_ERR OscGpioCreate()
 	return SUCCESS;
 }
 
-#ifdef TARGET_TYPE_LEANXCAM
+#if defined(TARGET_TYPE_LEANXCAM) || defined(TARGET_TYPE_RASPI_CAM)
 
 OSC_ERR OscGpioConfigSensorLedOut(bool bSensorLedOut)
 {

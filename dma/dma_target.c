@@ -19,8 +19,11 @@
 /*! @file
  * @brief Memory DMA module implementation for target
  */
-
 #include "dma.h"
+
+#ifdef TARGET_TYPE_RASPI_CAM
+	#include "dma_host.c"
+#else
 
 /*! @brief Raise exception, which will configure and start the DMA.
  * 
@@ -108,3 +111,5 @@ OSC_ERR OscDmaSync(void *hChainHandle)
 	return -ETIMEOUT;
 #endif /* DMA_TIMEOUT_WORKAROUND */
 }
+
+#endif /* #ifdef TARGET_TYPE_RASPI_CAM */

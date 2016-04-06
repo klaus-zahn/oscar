@@ -729,7 +729,7 @@ OscFunction(OscCfgGetSystemInfo, struct OscSystemInfo ** ppInfo)
 		remaining -= len;
 	OscFunctionEnd()
 	
-#if defined(TARGET_TYPE_LEANXCAM) || (TARGET_TYPE_INDXCAM)
+#if defined(TARGET_TYPE_LEANXCAM) || (TARGET_TYPE_INDXCAM) || defined(TARGET_TYPE_RASPI_CAM)
 	OscFunction(hasBayernPattern, struct OscSystemInfo * pInfo, bool * res)
 		if (pInfo->hardware.board.boardType == OscSystemInfo_boardType_leanXcam) {
 			if (strcmp(pInfo->hardware.board.assembly, "A") == 0 || strcmp(pInfo->hardware.board.assembly, "B") == 0) {
@@ -805,6 +805,9 @@ OscFunction(OscCfgGetSystemInfo, struct OscSystemInfo ** ppInfo)
 #ifdef TARGET_TYPE_LEANXRADIO
 				envVar = "LEANXRADIO_1.0_A";
 #endif
+#ifdef TARGET_TYPE_RASPI_CAM
+				envVar = "Raspberry PI 2";
+#endif
 			}
 		}
 		
@@ -847,7 +850,7 @@ OscFunction(OscCfgGetSystemInfo, struct OscSystemInfo ** ppInfo)
 			OscCall(staticStore, part4, &info.hardware.board.assembly);
 		}
 
-#if defined(TARGET_TYPE_LEANXCAM) || (TARGET_TYPE_INDXCAM)
+#if defined(TARGET_TYPE_LEANXCAM) || (TARGET_TYPE_INDXCAM) || defined(TARGET_TYPE_RASPI_CAM)
 		info.hardware.imageSensor.imageWidth = OSC_CAM_MAX_IMAGE_WIDTH;
 		info.hardware.imageSensor.imageWidth = OSC_CAM_MAX_IMAGE_HEIGHT;
 		OscCall(hasBayernPattern, &info, &info.hardware.imageSensor.hasBayernPattern);

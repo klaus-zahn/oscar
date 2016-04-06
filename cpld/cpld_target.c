@@ -19,14 +19,17 @@
 /*! @file
  * @brief Cpld module implementation for target.
  */
+#include "cpld.h"
+
+#ifdef TARGET_TYPE_RASPI_CAM
+	#include "cpld_host.c"
+#else
 
 #include <sys/ioctl.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
 #include <sys/mman.h>
-
-#include "cpld.h"
 
 OSC_ERR OscCpldCreate();
 OSC_ERR OscCpldDestroy();
@@ -131,3 +134,5 @@ OSC_ERR OscCpldFget(
 	}
 	return SUCCESS;
 }
+
+#endif /* #ifdef TARGET_TYPE_RASPI_CAM */

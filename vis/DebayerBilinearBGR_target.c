@@ -16,39 +16,22 @@
 	Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-/*! @file
- * @brief Blackfin DSP runtime library implementation for host.
- * 
- * All functions of the DSP runtime library used on the target must
- * be implemented for the host. The implementation for the target on the
- * other hand must not be done in the framework, since it already exists
- * in optimized form in the library.
- */
-#include "dspl.h"
+/*! @file Bilinear debayering to BGR format on host. */
+/* Helper functions */
+#include "DebayerBilinear.h"
 
-#ifdef TARGET_TYPE_RASPI_CAM
-	#include "dspl_host.c"
-#else
-
-
-struct OscModule OscModule_dspl = {
-	.name = "dspl",
-	.dependencies = {
-		NULL // To end the flexible array.
-	}
-};
-
-inline float OscDsplFr16ToFloat(fract16 n)
+#ifndef TARGET_TYPE_RASPI_CAM
+/* use to replace asm file , just an empty implementation (apparently not used) */
+OSC_ERR DebayerBilinearBGR(uint8 *pDst, 
+			   uint8 *pSrc, 
+			   uint32 width, 
+			   uint32 height, 
+			   uint8 *pTmp, 
+			   enum EnBayerOrder enBayerOrder)
 {
-	return (((float)n)/FR16_SCALE);
+  
+  return SUCCESS;
 }
 
-inline fract16 OscDsplFloatToFr16(float n)
-{
-	float ret = (n*FR16_SCALE);
-	if(ret > FR16_MAX)
-		ret = FR16_MAX;
-	return (fract16)ret;
-}
+#endif /* #ifdef TARGET_TYPE_RASPI_CAM */
 
-#endif //#ifdef TARGET_TYPE_RASPI_CAM

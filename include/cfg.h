@@ -121,7 +121,7 @@ struct OscSystemInfo {
 			int major, minor;
 			char * assembly, * revision;
 		} board;
-#if defined(TARGET_TYPE_LEANXCAM) || defined(TARGET_TYPE_INDXCAM)
+#if defined(TARGET_TYPE_LEANXCAM) || defined(TARGET_TYPE_INDXCAM) || defined(TARGET_TYPE_RASPI_CAM)
 		struct {
 			bool hasBayernPattern;
 			int imageWidth, imageHeight;

@@ -19,8 +19,12 @@
 /*! @file
  * @brief Interprocess communication module implementation for host
  */
-
 #include "ipc.h"
+
+#ifdef TARGET_TYPE_RASPI_CAM
+	#include "ipc_host.c"
+#else
+
 
 /*! The camera module singelton instance. Declared in ipc_shared.c*/
 extern struct OSC_IPC ipc;
@@ -293,3 +297,5 @@ OSC_ERR OscIpcAckRequest(const OSC_IPC_CHAN_ID chanID,
 
 	return SUCCESS;
 }
+
+#endif /* #ifdef TARGET_TYPE_RASPI_CAM */

@@ -148,7 +148,7 @@ OSC_ERR OscGpioToggleTestLed()
 }
 #endif /* TARGET_TYPE_INDXCAM */
 
-#ifdef TARGET_TYPE_LEANXCAM
+#if defined(TARGET_TYPE_LEANXCAM) || defined(TARGET_TYPE_RASPI_CAM)
 OSC_ERR OscGpioSetTestLed(bool bOn)
 {
 	OSC_ERR             err = SUCCESS;
@@ -201,7 +201,7 @@ OSC_ERR OscGpioSetTestLedColor(uint8 red, uint8 green)
 }
 #endif /* TARGET_TYPE_INDXCAM */
 
-#ifdef TARGET_TYPE_LEANXCAM
+#if defined(TARGET_TYPE_LEANXCAM) || defined(TARGET_TYPE_RASPI_CAM)
 OSC_ERR OscGpioSetTestLedColor(uint8 red, uint8 green)
 {
 	OSC_ERR             err = SUCCESS;

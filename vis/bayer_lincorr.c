@@ -855,8 +855,40 @@ OSC_ERR OscVisDebayer(const uint8* pRaw,
 	return SUCCESS;
 }
 
+
+#ifdef TARGET_TYPE_RASPI_CAM
+/*********************************************************************//*!
+ * @brief take YUV format type image and extract the Y-component
+ *
+ * @param pDstRow Output row (Y format)
+ * @param pSrcRow Output row (YUV format)
+ * @param inc soruce increment for each step
+ * @param width Width of the row.
+ *
+ *//*********************************************************************/
+static void bgbgToBgr(uint8 *pDstRow,
+		      const uint8 *pSrcRow,
+		      uint32 inc,
+		      uint32 width)
+{
+  uint32 pix;
+
+  for(pix = 0; pix < width; pix ++)
+  {
+    /********** Green pixel ***********/
+    // Blue color of green pixel
+    *pDstRow = *pSrcRow;
+
+    pDstRow++;
+    pSrcRow += inc;
+  }
+}
+#endif
+
+
 OSC_ERR OscVisDebayerGreyscaleHalfSize(uint8 const * const pRaw, uint16 const width, uint16 const height, enum EnBayerOrder const enBayerOrderFirstRow, uint8 * const pOut)
 {
+#ifndef TARGET_TYPE_RASPI_CAM	/* default implementation */
 	bool bTopLeftIsGreen;
 	uint16 ix, iy, outWidth = width / 2, outHeight = height / 2;
 	
@@ -917,6 +949,46 @@ OSC_ERR OscVisDebayerGreyscaleHalfSize(uint8 const * const pRaw, uint16 const wi
 			}
 		}
 	
+#else
+
+  uint32 row;
+
+  for(row = 0; row < height; row++)
+  {
+	// Then, pick out the value we need to the format we want.
+	switch(enBayerOrderFirstRow)
+	{
+	case ROW_YUV:
+	  bgbgToBgr(&pOut[row*width],
+			&pRaw[row*width*3],
+			3,
+			width);
+	  break;
+	case ROW_YUYV:
+	case ROW_YVYU:
+		bgbgToBgr(&pOut[row*width],
+			&pRaw[row*width*2],
+			2,
+			width);
+	  break;
+	case ROW_UYVY:
+	case ROW_VYUY:
+		bgbgToBgr(&pOut[row*width],
+			&pRaw[row*width*2+1],
+			2,
+			width);
+	  break;
+	default:
+	  OscLog(ERROR, "%s: Unsupported bayer order encountered! (%d)\n",
+		 __func__, enBayerOrderFirstRow);
+	  return -EUNSUPPORTED;
+	}
+
+  }
+
+
+#endif 	/* TARGET_TYPE_RASPI_CAM */
+
 	return SUCCESS;
 }
 

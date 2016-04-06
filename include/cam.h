@@ -65,12 +65,22 @@ enum EnOscCamPerspective
 /*! @brief Buffer ID of an invalid buffer. */
 #define OSC_CAM_INVALID_BUFFER_ID 255
 
+
+#ifdef TARGET_TYPE_RASPI_CAM
 /*! @brief The width of the biggest image that can be captured with this
- * sensor. */
-#define OSC_CAM_MAX_IMAGE_WIDTH 752
-/*! @brief The height of the biggest image that can be captured with this
- * sensor. */
-#define OSC_CAM_MAX_IMAGE_HEIGHT 480
+	 * sensor. */
+	#define OSC_CAM_MAX_IMAGE_WIDTH 640
+	/*! @brief The height of the biggest image that can be captured with this
+	 * sensor. */
+	#define OSC_CAM_MAX_IMAGE_HEIGHT 480
+#else
+	/*! @brief The width of the biggest image that can be captured with this
+	 * sensor. */
+	#define OSC_CAM_MAX_IMAGE_WIDTH 752
+	/*! @brief The height of the biggest image that can be captured with this
+	 * sensor. */
+	#define OSC_CAM_MAX_IMAGE_HEIGHT 480
+#endif
 
 /*! @brief The order in which the colored pixels of a bayer pattern
  * appear in a row.
@@ -88,10 +98,18 @@ enum EnOscCamPerspective
  * blue         10              00
  * */
 enum EnBayerOrder {
+	/* use debayer to convert yuv images to grey scale */
 	ROW_BGBG = 0,
 	ROW_RGRG = 1,
 	ROW_GBGB = 2,
 	ROW_GRGR = 3
+#ifdef TARGET_TYPE_RASPI_CAM
+	, ROW_YUV = 4,
+	ROW_YUYV = 5,
+	ROW_YVYU = 6,
+	ROW_UYVY = 7,
+	ROW_VYUY = 8
+#endif
 };
 
 /*========================== API functions =============================*/

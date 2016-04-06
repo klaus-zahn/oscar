@@ -33,7 +33,7 @@ extern struct OscModule OscModule_gpio;
  * platforms. Not all listed here may be available on your platform.
  * These are assigned to the same identifier as the corresponding pflags pin
  * driving them. */
-#ifdef TARGET_TYPE_LEANXCAM
+#if defined(TARGET_TYPE_LEANXCAM) || defined(TARGET_TYPE_RASPI_CAM)
 enum EnGpios
 {
 	GPIO_IN1 = 4,

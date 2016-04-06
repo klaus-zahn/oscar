@@ -22,6 +22,11 @@
 
 #include "srd.h"
 
+#ifdef TARGET_TYPE_RASPI_CAM
+	#include "srd_host.c"
+#else
+
+
 OSC_ERR OscSrdCreate();
 
 struct OSC_SRD srd;     /*!< Module singelton instance */
@@ -41,3 +46,5 @@ OSC_ERR OscSrdCreate()
 		
 	return SUCCESS;
 }
+
+#endif /* #ifdef TARGET_TYPE_RASPI_CAM */
