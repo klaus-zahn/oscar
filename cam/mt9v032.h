@@ -36,7 +36,7 @@
 	/*! @brief The maximum image height of the sensor. */
 	#define MAX_IMAGE_HEIGHT 480
 	/*! @brief the color type of the sensor. */
-	#define COLOR_TYPE 1  /* use 3 for color */
+	#define COLOR_TYPE 3  /* use 3 for color */
 #else
 	/*! @brief The maximum image width of the sensor. */
 	#define MAX_IMAGE_WIDTH 752
