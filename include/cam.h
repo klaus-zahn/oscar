@@ -73,6 +73,9 @@ enum EnOscCamPerspective
 	/*! @brief The height of the biggest image that can be captured with this
 	 * sensor. */
 	#define OSC_CAM_MAX_IMAGE_HEIGHT 480
+        /*! @brief set frame rate as time in ms per frame. 
+         * value of 100 = 10 fps; value 0 = best effort */
+        #define OSC_TIME_MS_PER_FRAME 100
 #else
 	/*! @brief The width of the biggest image that can be captured with this
 	 * sensor. */

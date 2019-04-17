@@ -36,9 +36,10 @@
 	#include <linux/videodev2.h>
 
 	/*! @brief buffer for grabber with v4l2 */
-	struct v4l2_buffer grabBuf;
+	struct v4l2_buffer grabBuf;        
 
 	OSC_ERR OscSetupV4l2();
+        OSC_ERR OscShowContrlV4l2();        
 	OSC_ERR OscStartStreamV4l2();
 	OSC_ERR OscDeqBufV4l2(uint8* fb);
 	OSC_ERR OscQueBufV4l2();
@@ -1038,7 +1039,10 @@ OSC_ERR OscCamConfigSensorLedOut(bool bSensorLedOut, bool bInvert)
 		cam.capWin.height  = fmt.fmt.pix.height;
 
 		cam.lastValidID = OSC_CAM_INVALID_BUFFER_ID;
-
+                
+                
+                
+                
 		return SUCCESS;
 	}
 
@@ -1068,8 +1072,76 @@ OSC_ERR OscCamConfigSensorLedOut(bool bSensorLedOut, bool bInvert)
 				return -EDEVICE;
 			}
 		}
+                
+                /* vcagrabber puts camera to fixed frame rate -> change */
+                struct v4l2_streamparm param;                
+
+                param.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+                param.parm.capture.timeperframe.numerator = OSC_TIME_MS_PER_FRAME;
+                param.parm.capture.timeperframe.denominator = 1000;
+                OscLog(NOTICE, "set frame rate %d / %d", OSC_TIME_MS_PER_FRAME, 1000);
+			
+		ret = ioctl(cam.vidDev, VIDIOC_S_PARM, &param);
+                if(unlikely(ret < 0))
+		{
+			OscLog(ERROR,
+					"%s: start video streaming: \
+					IOCTL failed with %d.\n",
+					__func__, errno);
+
+			switch(errno)
+			{
+			case EBUSY:
+				OscLog(ERROR,
+						"%s: Camera device is busy.\n",
+						__func__);
+				return -EDEVICE_BUSY;
+				break;
+			default:
+				OscLog(ERROR, "%s: IOCTL Error \"%s\" (%d)\n",
+						__func__, strerror(errno), errno);
+				return -EDEVICE;
+			}
+		}
+                
+                OscShowContrlV4l2();
+                
 		return SUCCESS;
 	}
+        
+        
+        OSC_ERR OscShowContrlV4l2()
+        {
+            struct v4l2_queryctrl queryctrl;
+                struct v4l2_querymenu querymenu;
+                
+                memset(&queryctrl, 0, sizeof(queryctrl));
+                
+                queryctrl.id = V4L2_CTRL_FLAG_NEXT_CTRL;
+                while (0 == ioctl(cam.vidDev, VIDIOC_QUERYCTRL, &queryctrl)) {
+                    if (!(queryctrl.flags & V4L2_CTRL_FLAG_DISABLED)) {
+                        OscLog(NOTICE, "Control %s\n", queryctrl.name);
+
+                        if (queryctrl.type == V4L2_CTRL_TYPE_MENU) {
+                            OscLog(NOTICE,"  Menu items:\n");
+
+                            memset(&querymenu, 0, sizeof(querymenu));
+                            querymenu.id = queryctrl.id;
+
+                            for (querymenu.index = queryctrl.minimum;
+                                 querymenu.index <= queryctrl.maximum;
+                                 querymenu.index++) {
+                                if (0 == ioctl(cam.vidDev, VIDIOC_QUERYMENU, &querymenu)) {
+                                    OscLog(NOTICE, "  %s\n", querymenu.name);
+                                }
+                            }
+                            
+                        }
+                    }
+
+                    queryctrl.id |= V4L2_CTRL_FLAG_NEXT_CTRL;
+                }
+        }
 
 
 	OSC_ERR OscDeqBufV4l2(uint8* fb)

@@ -71,10 +71,10 @@ OSC_ERR OscCamSetShutterWidth(const uint32 usecs)
 
 	if(usecs)
 	{
-		OscLog(DEBUG,"set manual exposure %d\n", usecs/100);
+		OscLog(NOTICE,"set manual exposure %d\n", usecs/1000);
 
 		control.id = V4L2_CID_EXPOSURE_ABSOLUTE;
-		control.value = usecs/100;
+		control.value = usecs/1000;
 
 		int ret = ioctl(cam.vidDev, VIDIOC_S_CTRL, &control);
 
